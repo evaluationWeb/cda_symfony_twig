@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calculatrice{% endblock %}
+
+{% block body %}
+    {% if operateur == "add" %}
+        <h2>{{ nbr1 + nbr2 }}</h2>
+    {% elseif operateur == "sous" %}
+        <h2>{{ nbr1 - nbr2 }}</h2>
+    {% elseif operateur == "multi" %}
+        <h2>{{ nbr1 * nbr2 }}</h2>
+    {% elseif operateur == "div" %}
+        {% if nbr2 == 0 %}
+            <h2>Division par zéro impossible</h2>
+        {% else %}
+            <h2>{{ nbr1 / nbr2 }}</h2>
+        {% endif %}
+    {% else %}
+        <h2>Les nombres sont négatifs</h2>
+    {% endif %}
+{% endblock %}
