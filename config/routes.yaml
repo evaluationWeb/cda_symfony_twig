@@ -3,3 +3,9 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+app_hello_test:
+    path: /hello/{nom}
+    controller: App\Controller\HelloController::helloTo
+app_accueil_addition:
+    path: /addition/{nbr1}/{nbr2}
+    controller: App\Controller\AccueilController::addition
