@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\AccountRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -26,8 +26,9 @@ class Account
     #[ORM\Column(length: 100)]
     private ?string $password = null;
 
-    #[ORM\Column(type: Types::ARRAY, nullable: true)]
-    private ?array $roles = null;
+    #[ORM\Column(length: 50)]
+    private ?string $roles = null;
+
 
     public function getId(): ?int
     {
@@ -82,15 +83,16 @@ class Account
         return $this;
     }
 
-    public function getRoles(): ?array
+    public function getRoles(): ?string
     {
         return $this->roles;
     }
 
-    public function setRoles(?array $roles): static
+    public function setRoles(string $roles): static
     {
         $this->roles = $roles;
 
         return $this;
     }
+
 }
