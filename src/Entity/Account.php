@@ -29,7 +29,6 @@ class Account
     #[ORM\Column(length: 50)]
     private ?string $roles = null;
 
-
     public function getId(): ?int
     {
         return $this->id;
