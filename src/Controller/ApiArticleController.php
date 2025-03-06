@@ -9,12 +9,13 @@ use App\Entity\Article;
 use App\Repository\ArticleRepository;
 
 
-final class ApiArticleController extends AbstractController {
+final class ApiArticleController extends AbstractController
+{
 
     public function __construct(
         private ArticleRepository $articleRepository
     ) {}
-    
+
 
     #[Route('/api/articles', name: 'api_articles_all')]
     public function getAllAccounts(): Response
@@ -32,12 +33,13 @@ final class ApiArticleController extends AbstractController {
 
 
     #[Route('/api/article/{id}', name: 'api_article_get')]
-    public function getArticleById(int $id) :Response {
+    public function getArticleById(int $id): Response
+    {
         //Récupération de l'article
         $article = $this->articleRepository->find($id);
         $code = 200;
         //test si l'article existe pas
-        if(!$article) {
+        if (!$article) {
             $article = "Article n'existe pas";
             $code = 404;
         }
