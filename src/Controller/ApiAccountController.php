@@ -9,7 +9,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Account;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 final class ApiAccountController extends AbstractController
 {
@@ -37,7 +39,7 @@ final class ApiAccountController extends AbstractController
 
 
     #[Route('/api/account', name: 'api_account_add', methods: ['POST'])]
-    public function addAccount(Request $request): Response
+    public function addAccount(Request $request, UserPasswordHasherInterface $hasher): Response
     {
         $json = $request->getContent();
         $account = $this->serializer->deserialize($json, Account::class, 'json');
@@ -45,6 +47,7 @@ final class ApiAccountController extends AbstractController
         if ($account->getFirstname() && $account->getLastname() && $account->getEmail() && $account->getPassword() && $account->getRoles()) {
             //Test si le compte n'existe pas
             if (!$this->accountRepository->findOneBy(["email" => $account->getEmail()])) {
+                $account->setPassword($hasher->hashPassword($account, $account->getPassword()));
                 $this->em->persist($account);
                 $this->em->flush();
                 $code = 201;
@@ -62,7 +65,7 @@ final class ApiAccountController extends AbstractController
         }
         //Retourner la réponse json
         return $this->json($account, $code, [
-            "Access-Control-Allow-Origin" => $this->getParameter('allowed_origin'),
+            "Access-Control-Allow-Origin" => "*",
         ], ["groups" => "account:create"]);
     }
 }
