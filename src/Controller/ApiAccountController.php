@@ -2,29 +2,31 @@
 
 namespace App\Controller;
 
-use App\Entity\Category;
-use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Account;
+use App\Repository\AccountRepository;
 
-class ApiCategoryController extends AbstractController
-{
+
+final class ApiAccountController extends AbstractController {
+
     public function __construct(
-        private CategoryRepository $categoryRepository
+        private AccountRepository $accountRepository
     ) {}
+    
 
-    #[Route('/api/categories', name: 'api_category_all')]
-    public function getAllCategories(): Response
+    #[Route('/api/accounts', name: 'api_account_all')]
+    public function getAllAccounts(): Response
     {
         return $this->json(
-            $this->categoryRepository->findAll(),
+            $this->accountRepository->findAll(),
             200,
             [
                 "Access-Control-Allow-Origin" => "*",
                 "Content-Type" => "application/json"
             ],
-            ['groups' => 'category:read']
+            ['groups' => 'account:read']
         );
     }
 }
