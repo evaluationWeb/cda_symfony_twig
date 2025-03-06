@@ -16,11 +16,11 @@ class Account
     private ?int $id = null;
     
     #[ORM\Column(length: 50)]
-    #[Groups(['account:read'])]
+    #[Groups(['account:read', 'articles:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['account:read'])]
+    #[Groups(['account:read', 'articles:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 50)]

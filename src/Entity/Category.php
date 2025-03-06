@@ -16,7 +16,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
-    #[Groups(['category:read'])]
+    #[Groups(['category:read','articles:read'])]
     private ?string $name = null;
 
     public function getId(): ?int
