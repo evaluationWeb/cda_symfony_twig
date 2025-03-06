@@ -38,20 +38,21 @@ class ApiCategoryController extends AbstractController
         );
     }
 
-    #[Route('/api/category', name:'app_category_add', methods: ['POST'])]
-    public function addCategory(Request $request):Response {
+    #[Route('/api/category', name: 'app_category_add', methods: ['POST'])]
+    public function addCategory(Request $request): Response
+    {
         //Récupération le body de la requête
         $request = $request->getContent();
         //Convertir en objet Category
         $category = $this->serializer->deserialize($request, Category::class, 'json');
         //Tester si la catégorie n'existe pas
-        if(!$this->categoryRepository->findOneBy(["name"=>$category->getName()])) {
+        if (!$this->categoryRepository->findOneBy(["name" => $category->getName()])) {
             $this->em->persist($category);
             $this->em->flush();
             $code = 201;
         }
         //Sinon elle existe déjà
-        else{
+        else {
             $category = "Category existe déjà";
             $code = 400;
         }
