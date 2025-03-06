@@ -15,6 +15,7 @@ class Article
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['articles:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]

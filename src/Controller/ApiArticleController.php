@@ -29,4 +29,27 @@ final class ApiArticleController extends AbstractController {
             ['groups' => 'articles:read']
         );
     }
+
+
+    #[Route('/api/article/{id}', name: 'api_article_get')]
+    public function getArticleById(int $id) :Response {
+        //Récupération de l'article
+        $article = $this->articleRepository->find($id);
+        $code = 200;
+        //test si l'article existe pas
+        if(!$article) {
+            $article = "Article n'existe pas";
+            $code = 404;
+        }
+        //retourner la réponse json
+        return $this->json(
+            $article,
+            $code,
+            [
+                "Access-Control-Allow-Origin" => "*",
+                "Content-Type" => "application/json"
+            ],
+            ['groups' => 'articles:read']
+        );
+    }
 }
