@@ -12,6 +12,7 @@ use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 final class ApiAccountController extends AbstractController
@@ -21,7 +22,9 @@ final class ApiAccountController extends AbstractController
         private readonly AccountRepository $accountRepository,
         private readonly ArticleRepository $articleRepository,
         private readonly SerializerInterface $serializer,
-        private readonly EntityManagerInterface $em
+        private readonly EntityManagerInterface $em,
+        private readonly UserPasswordHasherInterface $hasher,
+        private readonly DecoderInterface $decoder
     ) {}
 
 
@@ -41,7 +44,7 @@ final class ApiAccountController extends AbstractController
 
     //Méthode pour ajouter un compte
     #[Route('/api/account', name: 'api_account_add', methods: ['POST'])]
-    public function addAccount(Request $request, UserPasswordHasherInterface $hasher): Response
+    public function addAccount(Request $request): Response
     {
         $json = $request->getContent();
         $account = $this->serializer->deserialize($json, Account::class, 'json');
@@ -49,7 +52,7 @@ final class ApiAccountController extends AbstractController
         if ($account->getFirstname() && $account->getLastname() && $account->getEmail() && $account->getPassword() && $account->getRoles()) {
             //Test si le compte n'existe pas
             if (!$this->accountRepository->findOneBy(["email" => $account->getEmail()])) {
-                $account->setPassword($hasher->hashPassword($account, $account->getPassword()));
+                $account->setPassword($this->hasher->hashPassword($account, $account->getPassword()));
                 $this->em->persist($account);
                 $this->em->flush();
                 $code = 201;
@@ -84,7 +87,6 @@ final class ApiAccountController extends AbstractController
         }
         //Sinon le json est valide
         else {
-
             $account = $this->serializer->deserialize($json, Account::class, 'json');
             $recup = $this->accountRepository->findOneBy(["email" => $account->getEmail()]);
 
@@ -165,6 +167,56 @@ final class ApiAccountController extends AbstractController
                 "Access-Control-Allow-Origin" => "*",
             ],
             []
+        );
+    }
+
+
+    //Méthode pour modifier son mot de passe
+    #[Route('/api/account', name: 'api_account_password', methods: ['PATCH'])]
+    public function updatePassword(Request $request) :Response {
+        $json = $request->getContent();
+        //Test si le json est vide
+        if (empty($json)) {
+            $account = "Json invalide";
+            $code = 400;
+        }
+        else {
+            //Récupér les valeurs dans je json -> tableau
+            $account = $this->decoder->decode($json, 'json');
+            //Récupérer le compte
+            $recup = $this->accountRepository->findOneBy(["email" => $account["email"]]);
+            //Test si le compte existe
+            if($recup) {
+
+                //Véfifier le mot de passe
+                if($this->hasher->isPasswordValid($recup, $account["old_password"])) {
+                    //Hasher le nouveau mot de passe
+                    $recup->setPassword($this->hasher->hashPassword($recup, $account["new_password"]));
+                    $this->em->persist($recup);
+                    $this->em->flush();
+                    $account = $recup;
+                    $code = 200;
+                }
+                //Sinon le mot de passe est incorrect
+                else {
+                    $account = "Mot de passe incorrect";
+                    $code = 400;
+                }
+            }
+            //Sinon le compte n'existe pas
+            else {
+                $account = "Pas de compte trouve";
+                $code = 404;
+            }
+        }
+        
+        return $this->json(
+            $account,
+            $code,
+            [
+                "Access-Control-Allow-Origin" => "*",
+            ],
+            ['groups' => 'account:update']
         );
     }
 }
