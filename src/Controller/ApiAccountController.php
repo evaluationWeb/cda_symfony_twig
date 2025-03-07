@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Account;
 use App\Repository\AccountRepository;
+use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,6 +19,7 @@ final class ApiAccountController extends AbstractController
 
     public function __construct(
         private readonly AccountRepository $accountRepository,
+        private readonly ArticleRepository $articleRepository,
         private readonly SerializerInterface $serializer,
         private readonly EntityManagerInterface $em
     ) {}
@@ -37,7 +39,7 @@ final class ApiAccountController extends AbstractController
         );
     }
 
-
+    //Méthode pour ajouter un compte
     #[Route('/api/account', name: 'api_account_add', methods: ['POST'])]
     public function addAccount(Request $request, UserPasswordHasherInterface $hasher): Response
     {
@@ -69,7 +71,7 @@ final class ApiAccountController extends AbstractController
         ], ["groups" => "account:create"]);
     }
 
-
+    //Méthode pour mettre à jour un compte( nom et prénom par son Email)
     #[Route('/api/account', name: 'api_account_update', methods: ['PUT'])]
     public function updateAcount(Request $request): Response
     {
@@ -118,6 +120,51 @@ final class ApiAccountController extends AbstractController
                 "Access-Control-Allow-Origin" => "*",
             ],
             ["groups" => "account:update"]
+        );
+    }
+
+    //Méthode pour supprimer un compte
+    #[Route('/api/account/{id}', name: 'api_account_delete', methods: ['DELETE'])]
+    public function deleteAccount(mixed $id): Response
+    {
+        //test si l'id est un nombre    
+        if (!is_numeric($id)) {
+            $code = 400;
+            $account = "Id invalide";
+        }
+        //Sinon l'id est un nombre
+        else {
+            $account = $this->accountRepository->find($id);
+            //Test si le compte existe
+            if ($account) {
+                //récupération d'un article du compte
+                $article =  $this->articleRepository->findOneBy(["author" => $account]);
+                //si le compte n'a pas d'articles
+                if (!$article) {
+                    $this->em->remove($account);
+                    $this->em->flush();
+                    $code = 200;
+                    $account = "Compte supprime";
+                }
+                //sinon le compte a des articles
+                else {
+                    $account = "Compte a des articles";
+                    $code = 400;
+                }
+            }
+            //Sinon le compte n'existe pas
+            else {
+                $account = "Pas de compte trouve";
+                $code = 404;
+            }
+        }
+        return $this->json(
+            $account,
+            $code,
+            [
+                "Access-Control-Allow-Origin" => "*",
+            ],
+            []
         );
     }
 }
