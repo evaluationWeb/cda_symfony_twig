@@ -14,19 +14,19 @@ class Account implements PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['account:create'])]
+    #[Groups(['account:create', 'account:update'])]
     private ?int $id = null;
     
     #[ORM\Column(length: 50)]
-    #[Groups(['account:read', 'articles:read', 'account:create'])]
+    #[Groups(['account:read', 'articles:read', 'account:create', 'account:update'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['account:read', 'articles:read', 'account:create'])]
+    #[Groups(['account:read', 'articles:read', 'account:create', 'account:update'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['account:read', 'account:create'])]
+    #[Groups(['account:read', 'account:create', 'account:update'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 100)]

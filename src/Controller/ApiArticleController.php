@@ -41,7 +41,7 @@ final class ApiArticleController extends AbstractController
     }
 
 
-    #[Route('/api/article/{id}', name: 'api_article_get')]
+    #[Route('/api/article/{id}', name: 'api_article_get', methods:['GET'])]
     public function getArticleById(int $id): Response
     {
         //Récupération de l'article
@@ -76,19 +76,21 @@ final class ApiArticleController extends AbstractController
             $article->setAuthor($this->accountRepository->findOneBy(["email" => $article->getAuthor()->getEmail()]));
             //Récupération des catégories
             foreach ($article->getCategories() as $key => $value) {
-                $cat = $value->getName();
+                $cat = $this->categoryRepository->findOneBy(["name" => $value->getName()]);
                 $article->removeCategory($value);
-                $cat = $this->categoryRepository->findOneBy(["name" => $cat]);
                 $article->addCategory($cat);
             }
             //Test l'article n'existe pas
-            if (!$this->articleRepository->findOneBy(["title" => $article->getTitle(), "content" => $article->getContent()])) {
+            if (!$this->articleRepository->findOneBy([
+                "title" => $article->getTitle(),
+                "content" => $article->getContent()
+            ])) {
                 $this->entityManager->persist($article);
                 $this->entityManager->flush();
                 $code = 201;
             } else {
                 $code = 400;
-                $article = "Article existe déjà";
+                $article = "Article existe deja";
             }
         } else {
             $code = 400;

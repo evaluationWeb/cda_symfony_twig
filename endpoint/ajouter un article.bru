@@ -5,7 +5,28 @@ meta {
 }
 
 post {
-  url: https://127.0.0.0.1:8000/article
-  body: none
+  url: https://127.0.0.1:8000/api/article
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "title":"exemple11",
+    "content":"contenu de mon article",
+    "createAt":"2025-03-06 00:00:00",
+    "author":{
+      "firstname":"Mathieu",
+      "lastname":"Mithridate",
+      "email":"mathieum@adrar.com"
+    },
+    "categories":[
+      {
+        "name":"exemple"
+      },
+      {
+        "name":"origin"
+      }
+    ]
+  }
 }

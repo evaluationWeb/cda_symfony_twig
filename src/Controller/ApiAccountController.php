@@ -68,4 +68,56 @@ final class ApiAccountController extends AbstractController
             "Access-Control-Allow-Origin" => "*",
         ], ["groups" => "account:create"]);
     }
+
+
+    #[Route('/api/account', name: 'api_account_update', methods: ['PUT'])]
+    public function updateAcount(Request $request): Response
+    {
+        $json = $request->getContent();
+        //dd($json);
+        //Test si le json est vide
+        if (empty($json)) {
+            $account = "Json invalide";
+            $code = 400;
+        }
+        //Sinon le json est valide
+        else {
+
+            $account = $this->serializer->deserialize($json, Account::class, 'json');
+            $recup = $this->accountRepository->findOneBy(["email" => $account->getEmail()]);
+
+            //Test si le compte existe
+            if ($recup) {
+                //Test si les champs sont remplis
+                if ($account->getFirstname() && $account->getLastname()) {
+                    $recup
+                        ->setFirstname($account->getFirstname())
+                        ->setLastname($account->getLastname());
+                    $this->em->persist($recup);
+                    $this->em->flush();
+                    $code = 200;
+                    $account = $recup;
+                }
+                //Sinon les champs ne sont pas remplis
+                else {
+                    $account = "Veuillez remplir tous les champs";
+                    $code = 400;
+                }
+            }
+            //Sinon le compte n'existe pas
+            else {
+                $account = "Pas de compte trouve";
+                $code = 404;
+            }
+        }
+
+        return $this->json(
+            $account,
+            $code,
+            [
+                "Access-Control-Allow-Origin" => "*",
+            ],
+            ["groups" => "account:update"]
+        );
+    }
 }
