@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des comptes{% endblock %}
+
+{% block body %}
+    {# Test si la liste des comptes est définie #}
+    {% if account is defined %}
+    <div class="grid gap-2 p-2 xl:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
+        
+    </div>
+    {% endif %}
+    
+    {# Bloc d'erreur #}
+    {% if erreur is defined %}
+        <p>{{ erreur }}</p>
+    {% endif %}
+    
+{% endblock %}

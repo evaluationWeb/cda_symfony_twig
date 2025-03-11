@@ -12,7 +12,7 @@ cd cda_symfony_twig
 # 3 Créer la variable d'environnement dans .env
 DATABASE_URL=
 
-# 4 Créer la variable d'environnement dans .env.decoration-violet-50
+# 4 Créer la variable d'environnement dans .env.dev
 DATABASE_URL="mysql://login:mdp@127.0.0.1:3306/nom_bdd?serverVersion=10.4.32-MariaDB&charset=utf8mb4"
 # Modifier avec vos propres valeurs
 
