@@ -79,4 +79,22 @@ final class UserController extends AbstractController
             'formulaire' =>$form
         ]);
     }
+
+    //Méthode qui affiche un compte par son id
+    #[Route('/account/{id}', name:'app_account_id')]
+    public function showById(int $id) :Response{
+
+        try {
+           $account = $this->accountService->getById($id);
+        } 
+        catch (\Exception $e) {
+            $erreur = $e->getMessage();
+        }
+        
+        return $this->render('user/account.html.twig', [
+            "account" => $account??null,
+            "erreur" => $erreur??null
+        ]);
+    }
+
 }

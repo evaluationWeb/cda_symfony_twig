@@ -48,4 +48,14 @@ final class AccountService
         }
         return $accounts;
     }
+
+    //Récupérer un compte par son id
+    public function getById(int $id) {
+        $account = $this->accountRepository->find($id);
+        //Test si le compte n'existe pas
+        if(!$account) {
+            throw new \Exception("Le compte n'existe pas", 404);
+        }
+        return $account;
+    }
 }
