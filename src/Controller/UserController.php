@@ -9,14 +9,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\AccountRepository;
 use App\Entity\Account;
 use App\Form\AccountType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\AccountService;
 
 
 final class UserController extends AbstractController
 {
     public function __construct(
         private readonly AccountRepository $accountRepository,
-        private readonly EntityManagerInterface $em
+        private readonly AccountService $accountService
     ) {}
 
     #[Route('/register', name: 'app_user_register')]
@@ -51,24 +51,18 @@ final class UserController extends AbstractController
         //test si le formulaire est submit
         if($form->isSubmitted() && $form->isValid()) {
             try {
-                //Test si le compte n'existe pas
-                if(!$this->accountRepository->findOneBy(['email' => $user->getEmail()])) {
-                    $user->setRoles('ROLE_USER');
-                    $this->em->persist($user);
-                    $this->em->flush();
-                    $type = "success";
-                    $msg = "Compte ajouté avec succès";
-                }
-                //Sinon si le compte
-                else {
-                    $type = "danger";
-                    $msg = "Email déjà utilisé";
-                }
-            }catch(\Exception $e) {
+                //Appel de la méthode save d'AccountService
+                $this->accountService->save($user);
+                $type = "success";
+                $msg = "Le compte a ete ajoute en BDD";
+            } 
+            //Capturer les exceptions (erreurs)
+            catch (\Exception $e) {
                 $type = "danger";
-                $msg="Enregistrement échoué";
+                $msg = $e->getMessage();
             }
-        $this->addFlash($type, $msg);
+            
+            $this->addFlash($type, $msg);
         }
         return $this->render('user/addaccount.html.twig',[
             'formulaire' =>$form
