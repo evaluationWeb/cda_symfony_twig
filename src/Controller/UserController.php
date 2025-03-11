@@ -31,14 +31,25 @@ final class UserController extends AbstractController
         return $this->render('user/login.html.twig');
     }
 
+
+    //Méthode qui va afficher tous les comptes
     #[Route('/accounts', name: 'app_user_accounts')]
     public function showAllAccounts(): Response
-    {
+    {   
+        try {
+            $accounts = $this->accountService->getAll();
+        } catch (\Exception $e) {
+            $erreur = $e->getMessage();
+        }
+        
         return $this->render('user/accounts.html.twig', [
-            "accounts" => $this->accountRepository->findAll()
+            "accounts" => $accounts??null,
+            "erreur" => $erreur??null
         ]);
     }
 
+
+    //Méthode qui ajoute un utilisateur en BDD
     #[Route('/account/add', name:'app_account_add')]
     public function addAccount(Request $request): Response
     {

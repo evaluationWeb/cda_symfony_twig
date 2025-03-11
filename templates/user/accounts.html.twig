@@ -3,6 +3,8 @@
 {% block title %}Liste des comptes{% endblock %}
 
 {% block body %}
+    {# Test si la liste des comptes est définie #}
+    {% if accounts is defined %}
     <div class="grid gap-2 p-2 xl:grid-cols-3 md:grid-cols-2 sm:grid-cols-1">
         {% for account in accounts %}
         <article id="{{ account.id }}"
@@ -17,4 +19,11 @@
         </article>
         {% endfor %}
     </div>
+    {% endif %}
+    
+    {# Bloc d'erreur #}
+    {% if erreur is defined %}
+        <p>{{ erreur }}</p>
+    {% endif %}
+    
 {% endblock %}
