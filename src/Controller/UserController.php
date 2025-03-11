@@ -61,9 +61,9 @@ final class UserController extends AbstractController
                 $type = "danger";
                 $msg = $e->getMessage();
             }
-            
             $this->addFlash($type, $msg);
         }
+
         return $this->render('user/addaccount.html.twig',[
             'formulaire' =>$form
         ]);
